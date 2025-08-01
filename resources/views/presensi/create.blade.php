@@ -417,9 +417,10 @@
             let lokasi;
             // Variabel untuk menampung lokasi user
             let lokasi_user;
-            let multi_lokasi = {{ $general_setting->multi_lokasi }};
-            let lokasi_cabang = multi_lokasi ? document.getElementById('cabang').value :
-                "{{ $lokasi_kantor->lokasi_cabang }}";
+            let multi_lokasi = {!! json_encode($general_setting->multi_lokasi ?? 0) !!};
+            let lokasi_cabang = multi_lokasi
+                ? document.getElementById('cabang').value
+                : {!! json_encode($lokasi_kantor->lokasi_cabang ?? "-6.2,106.8") !!};
             // Variabel map global
             let map;
             // alert(lokasi_cabang);
@@ -506,7 +507,9 @@
             document.addEventListener('visibilitychange', function() {
                 if (document.visibilityState === 'visible') {
                     // Jika halaman menjadi visible, cek apakah webcam perlu diinisialisasi ulang
-                    if (!Webcam.isInitialized()) {
+                    // Webcam.isInitialized() tidak ada, jadi kita cek apakah video element ada dan readyState
+                    var videoElem = document.querySelector('.webcam-capture video');
+                    if (!videoElem || videoElem.readyState === 0) {
                         console.log('Reinitializing webcam after visibility change');
                         initWebcam();
                     }
